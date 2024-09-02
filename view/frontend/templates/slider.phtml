@@ -1,0 +1,162 @@
+<?php
+$minPrice = $this->getMinPrice();
+$maxPrice = $this->getMaxPrice();
+
+// Add a small buffer to ensure boundary products are included
+$buffer = 0.01;
+
+$selectedMinPrice = $this->getRequest()->getParam('price') ? (float)explode('-', $this->getRequest()->getParam('price'))[0] : $minPrice;
+$selectedMaxPrice = $this->getRequest()->getParam('price') ? (float)explode('-', $this->getRequest()->getParam('price'))[1] : $maxPrice;
+?>
+
+<div class="price-slider-container">
+    <!-- Label Section -->
+    <div class="filter-label">
+        <h3 class="filter-title"><?= __('Filter By') ?></h3>
+        <h4 class="filter-subtitle"><?= __('Price') ?> <span class="filter-separator"></span></h4>
+    </div>
+
+    <!-- Price Slider Form -->
+    <form id="price-filter-form" action="<?= $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true, '_query' => ['price' => null]]) ?>" method="get">
+        <input type="hidden" name="price" id="price-range" value="<?= round($selectedMinPrice, 2) ?>-<?= round($selectedMaxPrice, 2) ?>" />
+        <div id="price-slider"></div> <!-- This is where the slider will appear -->
+        <div class="price-values">
+            <span class="min-price"><?= $this->getCurrencySymbol() ?><span id="min-price-display"><?= round($selectedMinPrice, 2) ?></span></span>
+            <span class="delimiter">–</span>
+            <span class="max-price"><?= $this->getCurrencySymbol() ?><span id="max-price-display"><?= round($selectedMaxPrice, 2) ?></span></span>
+        </div>
+        <div class="filter-actions">
+            <button type="submit" class="btn submit" title="<?= __('Apply filter') ?>"><?= __('Apply filter') ?></button>
+            <button type="button" class="btn clear" id="reset-price-slider" title="<?= __('Clear filter') ?>"><?= __('Clear') ?></button>
+        </div>
+    </form>
+</div>
+
+<!-- Inline jQuery UI Slider Initialization -->
+<script>
+require(['jquery', 'jquery/ui'], function($) {
+    $(document).ready(function() {
+        var initialMinPrice = <?= $minPrice ?>;
+        var initialMaxPrice = <?= $maxPrice ?>;
+        var selectedMinPrice = <?= round($selectedMinPrice, 2) ?>;
+        var selectedMaxPrice = <?= round($selectedMaxPrice, 2) ?>;
+
+        // Initialize the jQuery UI slider
+        $("#price-slider").slider({
+            range: true,
+            min: initialMinPrice,
+            max: initialMaxPrice,
+            values: [selectedMinPrice, selectedMaxPrice],
+            slide: function(event, ui) {
+                $("#min-price-display").text(ui.values[0]);
+                $("#max-price-display").text(ui.values[1]);
+                $("#price-range").val((ui.values[0] - <?= $buffer ?>).toFixed(2) + "-" + (ui.values[1] + <?= $buffer ?>).toFixed(2));
+            }
+        });
+
+        // Clear button functionality
+        $("#reset-price-slider").on("click", function() {
+            console.log("Clear button clicked");
+
+            // Reload the page without any query parameters to reset the filter
+            window.location.href = window.location.pathname;
+        });
+    });
+});
+</script>
+
+
+
+<!-- Optional CSS Styling -->
+<style>
+.filter-label:after{
+    display:none;
+}
+#price-slider {
+    width: 90%; /* Decrease width to avoid touching the next section */
+    margin: 10px auto 20px auto; /* Center the slider with auto margins */
+    max-width: 300px; /* Optional: Set a max width to limit slider size on larger screens */
+}
+
+.filter-label {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.filter-title {
+    font-size: 18px;
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}
+
+.filter-subtitle {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #777;
+    display: flex;
+    align-items: center;
+}
+
+.filter-subtitle .filter-separator {
+    flex-grow: 1;
+    height: 1px;
+    background-color: #ccc;
+    margin-left: 10px;
+}
+
+.price-values {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.price-values span {
+    font-weight: bold;
+}
+
+#price-slider .ui-slider-handle {
+    width: 1.5em;
+    height: 1.5em;
+    background-color: #5a5a5a;
+    border-radius: 50%;
+}
+
+#price-slider .ui-slider-range {
+    background-color: #f39c12;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px;
+}
+
+.filter-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 15px;
+    font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #price-slider {
+        width: 100%; /* Full width on smaller screens */
+        max-width: none; /* Remove max-width for smaller screens */
+    }
+
+    .filter-label, .price-values, .filter-actions {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: flex-start;
+    }
+
+    .filter-actions .btn {
+        width: 100%; /* Buttons take full width on small screens */
+        margin-bottom: 5px; /* Space between stacked buttons */
+    }
+}
+
+</style>
