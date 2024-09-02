@@ -1,4 +1,4 @@
-# WB Price Slider Module
+# Price Slider Module
 
 ## Overview
 
