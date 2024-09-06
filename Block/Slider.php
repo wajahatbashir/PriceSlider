@@ -98,19 +98,36 @@ class Slider extends Template
     {
         $layer = $this->layerResolver->get();
         $category = $layer->getCurrentCategory();
+        $storeId = $this->storeManager->getStore()->getId(); // Get the current store ID
+
+        // Fetch the product collection for the current category
         $productCollection = $category->getProductCollection();
         $productCollection->addAttributeToSelect('price');
-        $productCollection->addFinalPrice(); // Ensures final price including discounts is used
+        $productCollection->addFinalPrice(); // Ensure final price including discounts is used
+        $productCollection->setStoreId($storeId); // Filter by the current store ID
+        $productCollection->addStoreFilter($storeId); // Ensure filtering only by the current store
         $productCollection->setPageSize(0); // Ensure all products are loaded
         $productCollection->setCurPage(1); // Start from the first page
+
+        // Exclude products with zero price
+        $productCollection->addAttributeToFilter('price', ['gt' => 0]);
 
         // Reset any potential filters or limitations
         $productCollection->clear();
         $productCollection->getSelect()->reset(\Zend_Db_Select::LIMIT_COUNT);
         $productCollection->getSelect()->reset(\Zend_Db_Select::LIMIT_OFFSET);
 
+        // For debugging: output product data to ensure proper store filtering
+        /* ($productCollection as $product) {
+            echo "Store ID: " . $storeId . "<br>";
+            echo "Product ID: " . $product->getId() . "<br>";
+            echo "Product Price: " . $product->getPrice() . "<br>";
+            echo "Final Price: " . $product->getFinalPrice() . "<br><br>";
+        }*/
+
         return $productCollection;
     }
+
 
     /**
      * Converts a price to the store's base currency if necessary
