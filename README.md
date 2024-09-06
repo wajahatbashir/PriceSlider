@@ -4,6 +4,10 @@
 
 The **WB Price Slider** module provides a customizable and responsive price slider for Magento 2, allowing users to filter products by price on the category page. The slider is easy to integrate, supports multiple stores and currencies, and includes a "Clear" button to reset the filter.
 
+## Screenshots
+### Layerd Navigation
+![Layerd Navigation](https://github.com/wajahatbashir/wajahatbashir/blob/main/images/price-slider.jpg)
+
 ## Features
 
 - Customizable price slider that displays minimum and maximum prices.
@@ -85,15 +89,15 @@ If you encounter any issues with this module, please create an issue on the repo
 ## License
 
 This module is licensed under the MIT License.
-```
+
 
 ### Explanation of Updates:
 
-1. **Store Configuration**:
+1. Store Configuration:
    - Added a section under "Configuration" that explains how the module can be enabled or disabled from the Magento Admin Store Configuration.
 
-2. **Compatibility**:
+2. Compatibility:
    - Highlighted the module's compatibility with different base currencies on multiple store views within the same website.
 
-3. **Improvements Needed**:
+3. Improvements Needed:
    - Included a section acknowledging that further improvements may be needed and encouraging feedback.
